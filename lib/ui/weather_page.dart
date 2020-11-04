@@ -21,18 +21,18 @@ class _WeatherPageState extends State<WeatherPage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: StreamBuilder<Forecast>(
+        child: StreamBuilder<List<Forecast>>(
           stream: _bloc.stream,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
+              var forecasts = snapshot.data;
               return ListView.builder(
-                  itemCount: 1,
+                  itemCount: forecasts.length,
                   itemBuilder: (context, index) {
                     return ListTile(
-                      title: Row(
-                          children:
-                              _populateListItemWithForecast(snapshot.data)),
-                    );
+                        title: Row(
+                      children: _populateListItemWithForecast(forecasts[index]),
+                    ));
                   });
             } else {
               return Text("No data provided");
@@ -62,5 +62,11 @@ class _WeatherPageState extends State<WeatherPage> {
         child: Text(title),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _bloc.dispose();
+    super.dispose();
   }
 }
