@@ -27,8 +27,12 @@ class _WeatherPageState extends State<WeatherPage> {
             if (snapshot.hasData) {
               var forecasts = snapshot.data;
               return ListView.builder(
-                  itemCount: forecasts.length,
+                  itemCount: forecasts.length + 1,
                   itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return ListTile(title: _getListHeader());
+                    }
+                    index--;
                     return ListTile(
                         title: Row(
                       children: _populateListItemWithForecast(forecasts[index]),
@@ -60,6 +64,29 @@ class _WeatherPageState extends State<WeatherPage> {
       flex: 1,
       child: Center(
         child: Text(title),
+      ),
+    );
+  }
+
+  Widget _getListHeader() {
+    return Row(
+      children: [
+        _getItemPartWidgetBold('City'),
+        _getItemPartWidgetBold('Today'),
+        _getItemPartWidgetBold('Tomorrow'),
+        _getItemPartWidgetBold('In 2 days'),
+      ],
+    );
+  }
+
+  Widget _getItemPartWidgetBold(String title) {
+    return Expanded(
+      flex: 1,
+      child: Center(
+        child: Text(title,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            )),
       ),
     );
   }
