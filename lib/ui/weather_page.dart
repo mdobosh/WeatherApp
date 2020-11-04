@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/bloc/forecast_bloc.dart';
 import 'package:weather_app/data/model/forecast.dart';
-import 'package:weather_app/data/remote/forecast_repository.dart';
 
 class WeatherPage extends StatefulWidget {
   WeatherPage({Key key, this.title}) : super(key: key);
@@ -12,15 +12,7 @@ class WeatherPage extends StatefulWidget {
 }
 
 class _WeatherPageState extends State<WeatherPage> {
-  List<Forecast> _forecasts;
-  ForecastRepository _repository;
-
-  @override
-  void initState() {
-    _repository = ForecastRepository();
-    _forecasts = _repository.fetchFakeData();
-    super.initState();
-  }
+  final ForecastBloc _bloc = ForecastBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -29,15 +21,25 @@ class _WeatherPageState extends State<WeatherPage> {
         title: Text(widget.title),
       ),
       body: Center(
-          child: ListView.builder(
-              itemCount: _forecasts.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Row(
-                      children:
-                          _populateListItemWithForecast(_forecasts[index])),
-                );
-              })),
+        child: StreamBuilder<Forecast>(
+          stream: _bloc.stream,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return ListView.builder(
+                  itemCount: 1,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Row(
+                          children:
+                              _populateListItemWithForecast(snapshot.data)),
+                    );
+                  });
+            } else {
+              return Text("No data provided");
+            }
+          },
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
       ),
@@ -46,7 +48,7 @@ class _WeatherPageState extends State<WeatherPage> {
 
   List<Widget> _populateListItemWithForecast(Forecast forecast) {
     return [
-      _getItemPartWidget(forecast.city.name),
+      _getItemPartWidget(forecast.city),
       _getItemPartWidget('${forecast.temperatureToday}°C'),
       _getItemPartWidget('${forecast.temperatureTomorrow}°C'),
       _getItemPartWidget('${forecast.temperatureInTwoDays}°C'),
