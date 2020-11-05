@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:weather_app/bloc/forecast_bloc.dart';
 import 'package:weather_app/data/model/forecast.dart';
+import 'package:weather_app/ui/city_search_delegate.dart';
 
-class WeatherPage extends StatefulWidget {
-  WeatherPage({Key key, this.title}) : super(key: key);
+class WeatherScreen extends StatefulWidget {
+  WeatherScreen({Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _WeatherPageState createState() => _WeatherPageState();
+  _WeatherScreenState createState() => _WeatherScreenState();
 }
 
-class _WeatherPageState extends State<WeatherPage> {
+class _WeatherScreenState extends State<WeatherScreen> {
   final ForecastBloc _bloc = ForecastBloc();
 
   @override
@@ -45,6 +46,10 @@ class _WeatherPageState extends State<WeatherPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showSearch(context: context, delegate: CitySearchDelegate())
+              .then((value) => setState(() => {_bloc.updateWeather()}));
+        },
         child: Icon(Icons.add),
       ),
     );
@@ -52,7 +57,7 @@ class _WeatherPageState extends State<WeatherPage> {
 
   List<Widget> _populateListItemWithForecast(Forecast forecast) {
     return [
-      _getItemPartWidget(forecast.city),
+      _getItemPartWidget(forecast.city.name),
       _getItemPartWidget('${forecast.temperatureToday}°C'),
       _getItemPartWidget('${forecast.temperatureTomorrow}°C'),
       _getItemPartWidget('${forecast.temperatureInTwoDays}°C'),
