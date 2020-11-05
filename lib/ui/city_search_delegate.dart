@@ -28,25 +28,13 @@ class CitySearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    return ListView.builder(
-        itemCount: _cities.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(_cities[index].name),
-            onTap: () {
-              _bloc.saveCity(_cities[index]);
-              Navigator.pop(context);
-            },
-          );
-        });
+    return buildSuggestions(context);
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
     if (query.isNotEmpty) {
-      Future.delayed(Duration(milliseconds: 300), () {
-        _bloc.fetchCities(query);
-      });
+      _bloc.fetchCities(query);
     }
     return StreamBuilder<List<City>>(
         stream: _bloc.stream,
